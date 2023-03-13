@@ -1,0 +1,1763 @@
+var ShowLoader = function (show) {
+    if (show)
+        $('.splash').show();
+    else
+        $('.splash').hide();
+}
+function LoginDivShowHide() {
+    $('input[type="radio"]').click(function () {
+        if ($(this).attr("value") == "FAC") {
+            $("#RoleCode").val("FAC");
+            $('.hdnsocialLoginType').val('FAC');
+            URL = "Account/_ForgotPassword?RoleCode=FAC";
+        }
+        if ($(this).attr("value") == "APP") {
+            $("#RoleCode").val("APP");
+            $('.hdnsocialLoginType').val('APP');
+            URL = "Account/_ForgotPassword?RoleCode=APP";
+        }
+    });
+}
+function OpenDatePicker() {
+    var d = new Date();
+    var year = d.getFullYear();
+    $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-80:" + year + "",
+        defaultDate: new Date(year, d.getMonth(), d.getDay()),
+        buttonImage: BaseURL + '/Images/calendar.png',
+        buttonImageOnly: true,
+        showOn: 'both'
+    }).live('change', function () {
+        $('.datepicker').valid();
+    });
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+    
+}
+/* For passport expiry date 
+function OpenDatePickerExpire() {
+    var d = new Date();
+    var year = d.getFullYear();
+    $(".datepickerExpire").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        //yearRange: "-80:" + year + "",
+        yearRange: '-100:2050',
+        defaultDate: new Date(year, d.getMonth(), d.getDay()),
+        buttonImage: BaseURL + '/Images/calendar.png',
+        buttonImageOnly: true,
+        showOn: 'both'
+    }).live('change', function () {
+        $('.datepicker').valid();
+    });
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+
+}*/
+
+function OpenPassportExpireDatePicker() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepickerExpire").datepicker({
+        dateFormat: 'dd/mm/yy',
+        yearRange: '-100:2050',
+        changeMonth: true,
+        changeYear: true,
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        // minDate: '0',
+        maxDate: '+40Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var ItemIndex, PassIssueDate, PassExpiryDate;
+            var option = this.id;
+            if (option.indexOf('__') > -1) {
+                option = option.substr(9);
+                ItemIndex = this.id.substr(0, 9);
+            } else if (option.indexOf('_') > -1) {
+                option = option.substr(6);
+                ItemIndex = this.id.substr(0, 6);
+            }
+            if (typeof (ItemIndex) === "undefined") {
+                ItemIndex = '';
+            }
+            if (option == 'PassportIssueDate') {
+                PassIssueDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                PassExpiryDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'PassportExpiryDate')).val());
+                CompareDateToPass(PassIssueDate, PassExpiryDate, this.id)
+            }
+            if (option == 'PassportExpiryDate') {
+                PassExpiryDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                PassIssueDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'PassportIssueDate')).val());
+                CompareDateToPass(PassIssueDate, PassExpiryDate, this.id)
+            }
+            $('.datepickerExpire').valid();
+        }
+    })
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+
+function CompareDateToPass(PassIssueDate, PassExpiryDate, id) {
+    if (typeof (PassIssueDate) === "undefined") {
+        PassIssueDate = null;
+    }
+    if (typeof (PassExpiryDate) === "undefined") {
+        PassExpiryDate = null;
+    }
+    if (PassIssueDate != null && PassExpiryDate != null) {
+        if (new Date(PassIssueDate) >= new Date(PassExpiryDate)) {
+            jAlert('Passport Expiry date should be greater than Passport Issue date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    } else if (PassIssueDate == null && PassExpiryDate != null) {
+        jAlert('Please select Passport Issue date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+}
+
+//function OpenCGSDatePicker() {
+//    var d = new Date();
+//    var year = d.getFullYear();
+//    $(".datepicker").datepicker({
+//        dateFormat: 'dd/mm/yy',
+//        changeMonth: true,
+//        changeYear: true,
+//        yearRange: '-100:2050',
+//        //minDate: '0',
+//        maxDate: '+40Y',
+//        defaultDate: new Date(year, d.getMonth(), d.getDay()),
+//        buttonImage: BaseURL + '/Images/calendar.png',
+//        buttonImageOnly: true,
+//        showOn: 'both'
+//    }).live('change', function () {
+//        $('.datepicker').valid();
+//    });
+//    $(".datepicker").keypress(function (event) {
+//        return false;
+//    });
+//}
+
+function OpenCGSDatePicker() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        yearRange: '-100:2050',
+        changeMonth: true,
+        changeYear: true,
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        // minDate: '0',
+        maxDate: '+40Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var ItemIndex, CGSFromDate, CGSToDate;
+            var option = this.id;
+            if (option.indexOf('__') > -1) {
+                option = option.substr(9);
+                ItemIndex = this.id.substr(0, 9);
+            } else if (option.indexOf('_') > -1) {
+                option = option.substr(6);
+                ItemIndex = this.id.substr(0, 6);
+            }
+            if (typeof (ItemIndex) === "undefined") {
+                ItemIndex = '';
+            }
+            if (option == 'IssuedDateFrom') {
+                CGSFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                CGSToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'IssuedDateTo')).val());
+                CompareDateToCGS(CGSFromDate, CGSToDate, this.id)
+            }
+            if (option == 'IssuedDateTo') {
+                CGSToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                CGSFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'IssuedDateFrom')).val());
+                CompareDateToCGS(CGSFromDate, CGSToDate, this.id)
+            }
+            $('.datepicker').valid();
+        }
+    })
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+
+function CompareDateToCGS(CGSFromDate, CGSToDate, id) {
+    if (typeof (CGSFromDate) === "undefined") {
+        CGSFromDate = null;
+    }
+    if (typeof (CGSToDate) === "undefined") {
+        CGSToDate = null;
+    }
+    if (CGSFromDate != null && CGSToDate != null) {
+        if (new Date(CGSFromDate) >= new Date(CGSToDate)) {
+            jAlert('CGS valid upto date should be greater than CGS issued date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    } else if (CGSFromDate == null && CGSToDate != null) {
+        jAlert('Please select CGS issued date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+}
+
+
+
+
+
+function CompareDate() {
+    $(document).ready(function () {
+        $(".compareDate").change(function () {
+            var formDate = $.datepicker.parseDate('dd/mm/yy', $('#fromdate').val());
+            var toDate = $.datepicker.parseDate('dd/mm/yy', $('#todate').val());
+            if (toDate != null && formDate != null) {
+                if (new Date(formDate) > new Date(toDate)) {
+                    $("#validationTo").hide();
+                    $("#validationTo").html("To date should be greater than from date.");
+                    $("#validationTo").show();
+                    $("input[class='compareDate']").prop("type", "button");
+                    return false;
+                }
+                else {
+                    $("#validationTo").hide();
+                    $("input[class='compareDate']").prop("type", "submit");
+                }
+            }
+        });
+        
+        $(".orange").click(function () {
+            var formDate = $.datepicker.parseDate('dd/mm/yy', $('#fromdate').val());
+            var toDate = $.datepicker.parseDate('dd/mm/yy', $('#todate').val());
+            if (toDate != null && formDate != null) {
+                if (new Date(formDate) > new Date(toDate)) {
+                    $("#validationTo").hide();
+                    $("#validationTo").html("To date should be greater than from date.");
+                    $("input[class='compareDate']").prop("type", "button");
+                    $("#validationTo").show();
+                    return false;
+                }
+                else {
+                    $("#validationTo").hide();
+                    $("input[class='compareDate']").prop("type", "submit");
+                }
+            }
+        });
+    });
+}
+
+function Checkinvoic() {
+    var BaseURL = '@BaseURL';
+    $(document).ready(function () {
+        $("#InvoicingFacility").change(function () {
+            var firstDropVal = $('#InvoicingFacility option:selected').text();
+            var SecDropVal = $('#PaymentCategory option:selected').text();
+            if (SecDropVal == "Invoice") {
+                if (firstDropVal == "----Select-----") {
+                    $("#validation").hide();
+                    $("#validation").html("Please Select the facility");
+                    $("#validation").show();
+                    return false;
+                }
+                else {
+                    $("#validation").hide();
+                }
+            }
+        });
+
+        $(".orange").click(function () {
+            var firstDropVal = $('#InvoicingFacility option:selected').text();
+            var SecDropVal = $('#PaymentCategory option:selected').text();
+            if (firstDropVal == "----Select-----" && SecDropVal == "Invoice") {
+                $("#validation").hide();
+                $("#validation").html("Please Select the facility");
+                $("#validation").show();
+                return false;
+            }
+            else {
+                $("#validation").hide();
+            }
+        });
+    });
+}
+
+function OpenDatePickerEmp() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '-100:+0',
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        // minDate: '0',
+        maxDate: '-0Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var ItemIndex, empFromDate, empToDate;
+            var option = this.id;
+            if (option.indexOf('_') > -1) {
+                option = option.substr(6);
+                ItemIndex = this.id.substr(0, 6);
+            }
+            if (typeof (ItemIndex) === "undefined") {
+                ItemIndex = '';
+            }
+            if (option == 'EmploymentFrom') {
+                empFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                empToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'EmploymentTo')).val());
+                CompareEmploymentDate(empFromDate, empToDate, this.id)
+            }
+
+            if (option == 'EmploymentTo') {
+                empToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                empFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'EmploymentFrom')).val());
+                CompareEmploymentDate(empFromDate, empToDate, this.id)
+            }
+            $('.datepicker').valid();
+        }
+    })
+
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+function CompareEmploymentDate(empFromDate, empToDate, id) {
+    if (typeof (empFromDate) === "undefined") {
+        eduFromDate = null;
+    }
+    if (typeof (empToDate) === "undefined") {
+        eduToDate = null;
+    }
+
+    if (empFromDate == null) {
+        jAlert('Please select period of employment from first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+    else if (empFromDate != null && empToDate != null) {
+        if (new Date(empFromDate) > new Date(empToDate)) {
+            jAlert('Period of employment to should be greater than  period of employment from.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    }
+
+}
+function FillDateOnLicenseType(ID, LicenseTypeId) {
+    $(document).ready(function () {
+        var ItemIndex;
+        var option = ID;
+        if (option.indexOf('_') > -1) {
+            option = option.substr(6);
+            ItemIndex = ID.substr(0, 6);
+        }
+        if (typeof (ItemIndex) === "undefined") {
+            ItemIndex = '';
+        }
+        if (LicenseTypeId == 2) {
+
+            $('#' + (ItemIndex + 'ExpiryDate')).val('31/12/2050');
+            $('#' + (ItemIndex + 'LicenseStatusId')).val('4');
+        } else {
+            $('#' + (ItemIndex + 'ExpiryDate')).val('');
+            $('#' + (ItemIndex + 'LicenseStatusId')).val('0');
+        }
+    });
+}
+function OpenDatePickerHealth() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        //yearRange: '-100:+0',
+        yearRange: '-100:2050',
+        //minDate: '0',
+        maxDate: '+40Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var ItemIndex;
+            var option = this.id;
+            if (option.indexOf('_') > -1) {
+                option = option.substr(6);
+                ItemIndex = this.id.substr(0, 6);
+            }
+            if (typeof (ItemIndex) === "undefined") {
+                ItemIndex = '';
+            }
+            var ExpiryDate;
+            var IssuedDate;
+            if (option == 'IssuedDate') {
+                IssuedDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                ExpiryDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'ExpiryDate')).val());
+                CompareHealthDateTo(IssuedDate, ExpiryDate, this.id)
+            }
+            if (option == 'ExpiryDate') {
+                ExpiryDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                IssuedDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'IssuedDate')).val());
+                CompareHealthDateTo(IssuedDate, ExpiryDate, this.id)
+            }
+            $('.datepicker').valid();
+        }
+    })
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+function CompareHealthDateTo(IssuedDate, ExpiryDate, id) {
+    if (typeof (IssuedDate) === "undefined") {
+        eduFromDate = null;
+    }
+    if (typeof (ExpiryDate) === "undefined") {
+        eduToDate = null;
+    }
+    if (IssuedDate == null) {
+        jAlert('Please select license conferred/issued date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+    else if (IssuedDate != null && ExpiryDate != null) {
+        ExpiryDate.setDate(ExpiryDate.getDate() - 1);
+        if (new Date(IssuedDate) > new Date(ExpiryDate)) {
+            jAlert('License expiry date should be greater than license conferred/issued date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    }
+}
+function OpenEduDatePicker() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        yearRange: '-100:+0',
+        changeMonth: true,
+        changeYear: true,
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        // minDate: '0',
+        maxDate: '+0Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var ItemIndex, eduFromDate, eduToDate, eduIssueDate;
+            var option = this.id;
+            if (option.indexOf('__') > -1) {
+                option = option.substr(9);
+                ItemIndex = this.id.substr(0, 9);
+            } else if (option.indexOf('_') > -1) {
+                option = option.substr(6);
+                ItemIndex = this.id.substr(0, 6);
+            }
+            if (typeof (ItemIndex) === "undefined") {
+                ItemIndex = '';
+            }
+            if (option == 'AttendanceFrom') {
+                eduFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                eduToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'AttendanceTo')).val());
+                CompareDateTo(eduFromDate, eduToDate, this.id)
+            }
+           
+
+            if (option == 'AttendanceTo') {
+                eduToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                eduFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'AttendanceFrom')).val());
+                CompareDateTo(eduFromDate, eduToDate, this.id)
+            }
+
+            if (option == 'ConferredDate') {
+                eduIssueDate = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                eduFromDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'AttendanceFrom')).val());
+                eduToDate = $.datepicker.parseDate('dd/mm/yy', $('#' + (ItemIndex + 'AttendanceTo')).val());
+                CompareDateIssueDate(eduFromDate, eduToDate, eduIssueDate, this.id)
+            }
+            $('.datepicker').valid();
+        }
+    })
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+
+function CompareDateTo(eduFromDate, eduToDate, id) {
+    if (typeof (eduFromDate) === "undefined") {
+        eduFromDate = null;
+    }
+    if (typeof (eduToDate) === "undefined") {
+        eduToDate = null;
+    }
+    if (eduFromDate != null && eduToDate != null) {
+        if (new Date(eduFromDate) >= new Date(eduToDate)) {
+            jAlert('Attendance To date should be greater than Attendance From date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    } else if (eduFromDate == null && eduToDate != null) {
+        jAlert('Please select Attendance From date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+}
+
+function CompareDateIssueDate(eduFromDate, eduToDate, eduIssueDate, id) {
+    if (typeof (eduFromDate) === "undefined") {
+        eduFromDate = null;
+    }
+    if (typeof (eduToDate) === "undefined") {
+        eduToDate = null;
+    }
+    if (typeof (eduIssueDate) === "undefined") {
+        eduIssueDate = null;
+    }
+
+    if (eduFromDate == null) {
+        jAlert('Please select Attendance From date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+    else if (eduToDate == null) {
+        jAlert('Please select Attendance To date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+    else if (eduFromDate != null && eduToDate != null && eduIssueDate != null) {
+        if (new Date(eduFromDate) >= new Date(eduToDate)) {
+            jAlert('Attendance To date should be greater than Attendance From date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+        else if (new Date(eduIssueDate) < new Date(eduToDate)) {
+            jAlert('Qualification Conferred/Issued date should be greater than or equal to attendance to date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    }
+}
+
+function OpenAttachmentPopup() {
+    $("a.buttonsmallanchor").click(function (event) {
+        event.preventDefault();
+        if ($(this).attr("href") != "#") {
+            //window.open($(this).attr("href"), "popupWindow", "location=1,width=700, height=400, scrollbars=yes,  left=400,top=200");
+            window.open($(this).attr("href"), "MsgWindow", "width=700, height=400, scrollbars=yes,  left=400,top=200");
+        }
+    });
+}
+function CloseButton() {
+    $(document).ready(function () {
+        $("#btnclose").click(function () {
+            window.close();
+        });
+    });
+}
+function DeleteAttachmentFile() {
+    $(document).ready(function () {
+        $(".delfile").click(function (event) {
+            if ($("#delVal").val() == "0") {
+                jConfirm('Do you really want to delete this file!', 'Confirmation Message',
+                  function (r) {
+                      if (r == true) {
+                          window.parent.document.getElementById("delVal").Value = "1";
+                          $(event.target).attr("class", "");
+                          $(event.target).attr("href", $(event.target).attr('rel'));
+                          event.target.click();
+                      }
+                  });
+            }
+        });
+    });
+}
+function ValidateOnlyNumbers(e, t) {
+    try {
+        if (window.event) {
+            var charCode = window.event.keyCode;
+        }
+
+        else if (e) {
+            var charCode = e.which;
+        }
+        else { return true; }
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+    catch (err) {
+        jAlert(err.Description, 'Alert Message');
+    }
+
+}
+function ValidateOnlyNumbersPaste() {
+    $(document).ready(function () {
+        $('#Client_Ref_Number').keyup(function () {
+            if (this.value.match(/[^0-9]/g)) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }
+        });
+    });
+}
+function ValidateCountryCode(e) {
+    try {
+        if (window.event) {
+            var charCode = window.event.keyCode;
+        }
+
+        else if (e) {
+            var charCode = e.which;
+        }
+        else { return true; }
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            if (charCode == 43) {
+                return true;
+            }
+            else return false;
+        }
+        return true;
+    }
+    catch (err) {
+        jAlert(err.Description, 'Alert Message');
+    }
+}
+function ValidateOnlyStrings(e) {
+    try {
+        if (window.event) {
+            var charCode = window.event.keyCode;
+        }
+        else if (e) {
+            var charCode = e.which;
+        }
+        else { return true; }
+        if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || charCode == 8 || charCode == 46 || charCode == 32 || charCode == 9)
+            return true;
+        else
+            return false;
+    }
+    catch (err) {
+        jAlert(err.Description, 'Alert Message');
+    }
+
+}
+function ValidateOnlyAlphanumeric(e) {
+    try {
+        if (window.event) {
+            var charCode = window.event.keyCode;
+        }
+        else if (e) {
+            var charCode = e.which;
+        }
+        else { return true; }
+        if (((charCode == 8) || (charCode >= 65 && charCode <= 90) || (charCode >= 48 && charCode <= 57) || (key >= 96 && key <= 105)))
+            return true;
+        else if ((charCode >= 33 && charCode <= 47))
+            return false;
+        else
+            return false;
+
+    }
+    catch (err) {
+    }
+
+}
+function FillSpacialityList(URL, ApplicationTypeId) {
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: URL + "Applicant/Sponsorship/FillSpacialityList",
+            data: { ApplicationTypeId: ApplicationTypeId },
+            success: function (data) {
+                var select = $('#SpecilityId');
+                select.children().remove();
+                for (var i = 0; i < data.length; i++) {
+                    select.append($('<option>', {
+                        value: data[i].Id,
+                        text: data[i].Name
+                    }));
+                }
+            },
+            cache: false
+        });
+    });
+}
+function FillSubSpacialityList(URL, SpecilityId) {
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: URL + "Applicant/Sponsorship/FillSubSpacialityList",
+            data: { SpecilityId: SpecilityId },
+            success: function (data) {
+                var select = $('#SubSpecilityId');
+                select.children().remove();
+                for (var i = 0; i < data.length; i++) {
+                    select.append($('<option>', {
+                        value: data[i].Id,
+                        text: data[i].Name
+                    }));
+                }
+            },
+            cache: false
+        });
+    });
+}
+
+function FillInvoiceList(URL, InvoiceId) {
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: URL + "Applicant/Sponsorship/FillSpacialityList",
+            data: { ApplicationTypeId: ApplicationTypeId },
+            success: function (data) {
+                var select = $('#InvoiceId');
+                select.children().remove();
+                for (var i = 0; i < data.length; i++) {
+                    select.append($('<option>', {
+                        value: data[i].Id,
+                        text: data[i].Name
+                    }));
+                }
+            },
+            cache: false
+        });
+    });
+}
+
+function ReportTransfer(ScreenType) {
+    $(document).ready(function () {
+        if (ScreenType = 'Yes') {
+            $('#divNoReportTransferCase').css('display', 'none');
+            $('#divReportTransfer').css('display', 'block');
+        }
+    });
+}
+
+function CheckedClientTypeReportTransfer() {
+    $(document).ready(function () {
+        if ($('#UAE').prop('checked') == true) {
+            $("#UAEClient").val('UAE');
+        } else {
+            $("#UAEClient").val('');
+        }
+        if ($('#NonUAE').prop('checked') == true) {
+            $("#NonUAEClient").val('Non');
+        } else {
+            $("#NonUAEClient").val('');
+        }
+    });
+}
+
+function FacilityDivShowHide() {
+    $('input[type="radio"]').click(function () {
+        if ($(this).attr("value") == "New") {
+            $("#ApplicantType").val("New");
+        }
+        if ($(this).attr("value") == "Edit") {
+            $("#ApplicantType").val("Edit");
+        }
+    });
+}
+
+function SkipComponentStatus(status) {
+    if (($('#' + status).val()) == '1') {
+        $('#skipped').hide();
+        $('#UnSkip').show();
+        $('.aroundHeading').css('opacity', '0.9');
+        $(':input').attr("style", "cursor:text;");
+        $(':input').attr("disabled", "disabled");
+        $('.ui-datepicker-trigger').css("display", "none");
+        $('.normal a:first').contents().unwrap().wrap('<p/>');
+        $('.normal p').addClass('buttonsmallanchor anchorBtn');
+    } else {
+        $('#UnSkip').hide();
+        $('#skipped').show();
+    }
+}
+function ValidateReportTransfer() {
+    $('#btnSaveAndNext').click(function () {
+        if ($('[name="UAEClient"]:checked').length > 0 || $('[name="NonUAEClient"]:checked').length > 0 || $('[name="HAADClient"]:checked').length > 0 || $('[name="DATAFLOWPLUSClient"]:checked').length > 0) {
+            var FileExistCount = $('.FileExistCount').attr("alt");
+            if (FileExistCount == 0) {
+                jAlert('Please upload documents.', 'Alert Message');
+                $("input[name='btnSaveAndNext']").prop("type", "button");
+                return false;
+            } else {
+                if ($("#"+FormId).valid()) {
+                    window.ShowLoader(true);
+                }
+                $("input[name='btnSaveAndNext']").prop("type", "submit");
+            }
+        } else {
+            jAlert('Please check at least one checkbox.', 'Alert Message');
+            $("input[name='btnSaveAndNext']").prop("type", "button");
+            return false;
+        }
+    });
+}
+
+function ValidatebtnSaveAndNextSponsorship() {
+    $('#btnSaveAndNext').click(function () {
+        var FormId = $(this).closest("form").attr('id');
+        var FileExistCount = $('.FileExistCount').attr("alt");
+        var FacilityNew = $('#FacilityNew').find("option:selected").val();
+        if (FileExistCount == 0 && FacilityNew !="9999999") {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNext']").prop("type", "button");
+            return false;
+        }
+        else
+        {
+            if ($("#"+FormId).valid()) {
+                var x = confirm('Once you have completed and saved this page, you will not be able to make any changes to the below details.');
+                if (x == true) {
+
+                    window.ShowLoader(true);
+                    return true;
+                }
+
+
+                else {
+                    window.ShowLoader(false);
+                    return false;
+                }
+            }
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+        }
+    });
+}
+
+function ValidatebtnSaveAndNext() {
+        $('#btnSaveAndNext').click(function () {
+        var FormId = $(this).closest("form").attr('id');
+        var FileExistCount = $('.FileExistCount').attr("alt");
+        if (FileExistCount == 0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNext']").prop("type", "button");
+            return false;
+        } else {
+            if ($("#"+FormId).valid()) {
+                window.ShowLoader(true);
+            }
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+        }
+    });
+}
+
+function ValidatePearsonal() {
+
+    $('#btnSaveAndNext').click(function () {
+        debugger
+        var FormId = $(this).closest("form").attr('id');
+        var PassportphotoFileExistCount = $('.PassportphotoFileExistCount').attr("alt");
+        var PassportCopyFileExistCount = $('.PassportCopyFileExistCount').attr("alt");
+        var PassportCopyFileExistCount1 = $('.PassportCopyFileExistCount1').attr("alt");
+        var MaritalStatus = $("#MaritalStatusId").val();
+        var rdoFemale = $('#Gender').val();
+        if (PassportphotoFileExistCount == 0 || PassportCopyFileExistCount == 0 || PassportCopyFileExistCount1==0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNext']").prop("type", "button");
+            return false;
+        }
+        //else if ((rdoFemale== 2) && (MaritalStatus == 1 || MaritalStatus == 2 || MaritalStatus == 4)) {
+        //    debugger;
+        //    if ($('#txtMaidenName').val() == '' || $('#txtMaidenName').val() == null) {
+        //        $("#txtMaidenName").css("border", "1px solid #e80c4d");
+        //        $('#spanRequired').show();
+        //        $('#spanAstric').show();
+        //        return false;
+        //    }
+        //    else {
+        //        return true;
+        //    }
+            
+        //}
+        else {
+            
+            if ($("#" + FormId).valid()) {
+                $("#txtMaidenName").css("border", "1px solid #ccc");
+                $('#spanRequired').hide();
+                $('#spanAstric').hide();
+                window.ShowLoader(true);
+            }
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+        }
+    });
+}
+function ValidateComponenetCheck() {
+
+    $('#btnSaveAndNextfirst').click(function () {
+        debugger
+        var FormId = $(this).closest("form").attr('id');
+        var FileExistCount = $('.FileExistCount').attr("alt");
+        if (FileExistCount == 0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNextfirst']").prop("type", "button");
+            return false;
+        } else {
+            if ($("#"+FormId).valid()) {
+                window.ShowLoader(true);
+            }
+            $("input[name='btnSaveAndNextfirst']").prop("type", "submit");
+        }
+    });
+    $('#btnSaveAndNextSecond').click(function () {
+        var FormId = $(this).closest("form").attr('id');
+        var FormIdSecond = $(this).closest("form").attr('id');
+        var FileExistCount = $('.FileExistCount').attr("alt");
+
+        if (FileExistCount == 0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNextSecond']").prop("type", "button");
+            return false;
+        } else {
+            if ($("#"+FormId).valid()) {
+                window.ShowLoader(true);
+            }
+            $("input[name='btnSaveAndNextSecond']").prop("type", "submit");
+        }
+    });
+}
+
+function ValidateEducational(filecount) {
+    $('#btnSaveAndNext').click(function () {
+        
+        var FormId = $(this).closest("form").attr('id');
+        var CSCount = 0;
+        var PQCount = 0;
+        for (i = 0; i <= filecount; i++) {
+            var ClientSpecificFileExistCount = $('.ClientSpecificFileExistCount_' + i).attr("alt");
+            var ProfessionalQualificationsFileExistCount = $('.ProfessionalQualificationsFileExistCount_' + i).attr("alt");
+            var ProfessionalQualificationsFileExistCountMS = $('.ProfessionalQualificationsFileExistCountMS_' + i).attr("alt");
+            if (ClientSpecificFileExistCount != 'undefined' && ClientSpecificFileExistCount == 0) {
+                CSCount = 1;
+                jAlert('Please upload documents.', 'Alert Message');
+                $("input[name='btnSaveAndNext']").prop("type", "button");
+                return false;
+            } else if (ProfessionalQualificationsFileExistCount != 'undefined' && ProfessionalQualificationsFileExistCount == 0) {
+                PQCount = 1;
+                jAlert('Please upload documents.', 'Alert Message');
+                $("input[name='btnSaveAndNext']").prop("type", "button");
+                return false;
+            }
+            else if (ProfessionalQualificationsFileExistCountMS != 'undefined' && ProfessionalQualificationsFileExistCountMS == 0) {
+                PQCount = 1;
+                jAlert('Please upload documents.', 'Alert Message');
+                $("input[name='btnSaveAndNext']").prop("type", "button");
+                return false;
+            }
+        }
+        if (CSCount == 0 && PQCount == 0) {
+
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+
+            if ($("#" + FormId).valid()) {
+                window.ShowLoader(true);
+            }
+        }
+
+    });
+    $('#btnSaveAddMore').click(function () {
+        var FormId = $(this).closest("form").attr('id');
+        var ProfessionalFileExistCount = $('.ProfessionalFileExistCount').attr("alt");
+
+        if ($("#DurationyearID").val() == 0 && $("#DurationMonthID").val() == 0) {
+            jAlert('Please select duration of program.', 'Alert Message');
+            return false;
+        }
+
+        if (ProfessionalFileExistCount != 'undefined' && ProfessionalFileExistCount == 0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAddMore']").prop("type", "button");
+            return false;
+        } else {
+           
+            if (ProfessionalFileExistCount == 1) {
+               
+                if ($("#"+FormId).valid()) {
+                  
+                    window.ShowLoader(true);
+                }
+                $("input[name='btnSaveAddMore']").prop("type", "submit");
+            }
+        }
+    });
+}
+
+
+
+function ValidateLOA() {
+    $('#btnSaveAndNext').click(function () {
+        var CIDFileExistCount = $('.CIDFileExistCount').attr("alt");
+        var RegCardDetailsFileExistCount = $('.RegCardDetailsFileExistCount').attr("alt");
+        var ENICFileExistCount = $('.ENICFileExistCount').attr("alt");
+        if (CIDFileExistCount == 0 || RegCardDetailsFileExistCount == 0 || ENICFileExistCount==0) {
+            jAlert('Please upload documents.', 'Alert Message');
+            $("input[name='btnSaveAndNext']").prop("type", "button");
+            return false;
+        } else {
+            window.ShowLoader(true);
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+        }
+    });
+}
+
+function ValidateAdditionalComponet() {
+    $('.btnSaveAndNext').click(function () {
+        debugger
+        var FormId = $(this).closest("form").attr('id');
+        if (FormId == 'frmResidency') {
+            $("#Item1_modelResidencie_City").val($("#Item1_modelResidencie_City").val().replace('-', ' '));
+        }
+            var FileExistCount = $('.' + FormId+'').attr("alt");
+           // var FileExistCount = $('.FileExistCount').attr("alt");
+            if (FileExistCount == 0) {
+                jAlert('Please upload documents.', 'Alert Message');
+                $("input[name='btnSaveAndNext']").prop("type", "button");
+                return false;
+            }
+            else {
+                if ($("#" + FormId).valid()) {
+                    window.ShowLoader(true);
+                }
+                $("input[name='btnSaveAndNext']").prop("type", "submit");
+            }
+        
+    });
+}
+function EducatingText(id) {
+    $(document).ready(function () {
+        var contInput = $('#' + id).attr('value');
+        $('.pageNote input').remove();
+        $('.pageNote').append(contInput);
+    });
+}
+
+
+
+function CheckCubmissionComponent(id, bindId) {
+    debugger
+    var chkval = $('#' + id).val() + ',';
+    if ($('#' + bindId).val() == '') {
+        $('#' + bindId).val(chkval);
+    }
+    else {
+        var oldcheck = $('#' + bindId).val();
+        oldcheck += chkval;
+        if ($('#' + id).prop('checked') == true) {
+            $('#' + bindId).val(oldcheck);
+        } else {
+            var list = removeByValue($('#' + bindId).val(), $('#' + id).val(), ',');
+            $('#' + bindId).val(list);
+        }
+    }
+
+    ShowDivIsHAADCase();
+}
+
+function removeByValue(list, value, separator) {
+    separator = separator || ",";
+    var values = list.split(",");
+    for (var i = 0 ; i < values.length ; i++) {
+        if (values[i] == value) {
+            values.splice(i, 1);
+            return values.join(",");
+        }
+    }
+    return list;
+}
+
+
+function ValidateApplicationSubmission() {
+    $('#btnSaveAndNext').click(function () {
+        var msg = '';
+        if ($('#Item3_IAgree').prop('checked') == false) {
+            msg += 'Please check on agreement checkbox,I understand that by clicking the submit button below I will no longer be able to edit or amend my application in any way.\n';
+        }
+        //if ($('#Item3_PaymentMode').prop('checked') == false) {
+        //    $('#lblPaymentMode').show();
+        //    return false;
+        //}
+        if (msg != '') {
+            jAlert(msg, 'Alert Message');
+            return false;
+        } else {
+            //window.ShowLoader(true);
+            $("input[name='btnSaveAndNext']").prop("type", "submit");
+        }
+    });
+}
+
+function disableDivFade() {
+    if ($('#hdnflag').val() == 13) {
+        $('#disabledivfade').addClass('disabledivfade');
+        $(':input').attr("style", "cursor:text;");
+        $(':input').attr("disabled", "disabled");
+        $('.ui-datepicker-trigger').css("display", "none");
+        $('.midLayout a').not('.tabbingHeading a, .previous').removeAttr('href');
+    }
+}
+
+function disableDivFadeOnSubbmission() {
+    if ($('#hdnflag').val() == 13) {
+        $('#disabledivfade').addClass('disabledivfade');
+        $(':input').not('#popup_ok').attr("style", "cursor:text;");
+        $(':input').not('#popup_ok').attr("disabled", "disabled");
+        $('.ui-datepicker-trigger').css("display", "none");
+    }
+}
+
+function SetSelectedValue() {
+    var flag = $('#hdnflag').val();
+    var pmtmode = $('#hdnPaymentMode').val();
+    if (flag >= 12) {
+        $('#Item3_IAgree').attr('checked', 'checked');
+        if (pmtmode == 'Cash') {
+            $('input[id="Item3_PaymentMode"][value="Cash"]').prop('checked', true);
+        } else if (pmtmode == 'Credit') {
+            $('input[id="Item3_PaymentMode"][value="CreditCard"]').prop('checked', true);
+        }
+    }
+}
+
+
+function ShowDivIsHAADCase() {
+    var IsHAAD = $('#Item3_IsHAAD').val();
+    var IsDATAFLOWPLUS = $('#Item3_IsDATAFLOWPLUS').val();
+    if ( IsDATAFLOWPLUS == 'True') {
+        var EducationCheck = $('#Item3_EducationCheck').val();
+        var EmploymentCheck = $('#Item3_EmploymentCheck').val();
+        var HealthLicenseCheck = $('#Item3_HealthLicenseCheck').val();
+        var CGSCheck = $('#Item3_CGSCheck').val();
+        if (EducationCheck == '' && EmploymentCheck == '' && HealthLicenseCheck == '' && CGSCheck == '') {
+            $('#DivIsHAADCase').css('display', 'none');
+        } else {
+            $('#DivIsHAADCase').css('display', 'block');
+        }
+    }
+}
+function OtherIAName() {
+    var selectedText = $("#IANameId option:selected").text();
+    if (selectedText == "Others") {
+        $(".IANameclass").show();
+    }
+    else {
+        $(".IANameclass").hide();
+        $("#IAName").val('NULL');
+    }
+    $("#IANameId").change(function () {
+        var selectedText = $("#IANameId option:selected").text();
+        if (selectedText == "Others") {
+            $(".IANameclass").show();
+            $("#IAName").val('');
+        }
+        else {
+            $(".IANameclass").hide();
+            $("#IAName").val('NULL');
+        }
+    })
+}
+
+
+function OtherHealthIAName() {
+    var selectedText = $("#Item2_IssuingAuthorityNameId option:selected").text();
+    if (selectedText == "Others") {
+        $(".IssuingAuthorityNameclass").show();
+    }
+    else {
+        $(".IssuingAuthorityNameclass").hide();
+        $("#Item2_IssuingAuthorityName").val('NULL');
+    }
+    $("#Item2_IssuingAuthorityNameId").change(function () {
+        var selectedText = $("#Item2_IssuingAuthorityNameId option:selected").text();
+        if (selectedText == "Others") {
+            $(".IssuingAuthorityNameclass").show();
+            $("#Item2_IssuingAuthorityName").val('');
+        }
+        else {
+            $(".IssuingAuthorityNameclass").hide();
+            $("#Item2_IssuingAuthorityName").val('NULL');
+        }
+    })
+}
+
+
+function OtherEditHealthIAName() {
+    var selectedText = $("#IssuingAuthorityNameId option:selected").text();
+    if (selectedText == "Others") {
+        $(".IssuingAuthorityNameclass").show();
+    }
+    else {
+        $(".IssuingAuthorityNameclass").hide();
+        $("#IssuingAuthorityName").val('NULL');
+    }
+    $("#IssuingAuthorityNameId").change(function () {
+        var selectedText = $("#IssuingAuthorityNameId option:selected").text();
+        if (selectedText == "Others") {
+            $(".IssuingAuthorityNameclass").show();
+            $("#IssuingAuthorityName").val('');
+        }
+        else {
+            $(".IssuingAuthorityNameclass").hide();
+            $("#IssuingAuthorityName").val('NULL');
+        }
+    })
+}
+
+
+
+function OtherCommonIAName(IANameId, IAName) {
+    if (IAName == '') {
+        var option = IANameId;
+        if (option.indexOf('__') > -1) {
+            //option = option.replace(' ', '');
+            option = option.substr(0, 9);
+            IAName = option + 'OtherUniversityName';
+        }
+    }
+    var selectedText = $("#" + IANameId + " option:selected").text();
+    if (selectedText == "Others") {
+        //$("#" + IAName).show();
+        $("." + IAName).show();
+    }
+    else {
+        //$("#" + IAName).hide();
+        $("." + IAName).hide();
+        $("#" + IAName).val('NULL');
+    }
+    $("#" + IANameId).change(function () {
+        var selectedText = $("#" + IANameId + " option:selected").text();
+        if (selectedText == "Others") {
+            //$("#" + IAName).show();
+            $("." + IAName).show();
+            $("#" + IAName).val('');
+        }
+        else {
+            //$("#" + IAName).hide();
+            $("." + IAName).hide();
+            $("#" + IAName).val('NULL');
+        }
+    })
+}
+
+
+function GetPackageAmount(BaseURL) {
+    $(".chgAmountPk").change(function () {
+        if ($('#TotalNoOfEmploymentChecks').val() == '') { $('#TotalNoOfEmploymentChecks').val('0'); }
+        if ($('#ExtraNoOfEmploymentChecks').val() == '') { $('#ExtraNoOfEmploymentChecks').val('0'); }
+        if ($('#ExtraNoOfHealthLicenseChecks').val() == '') { $('#ExtraNoOfHealthLicenseChecks').val('0'); }
+        if ($('#ExtraNoOfCGSChecks').val() == '') { $('#ExtraNoOfCGSChecks').val('0'); }
+        if ($('#ExtraNoOfEducation').val() == '') { $('#ExtraNoOfEducation').val('0'); }
+
+        var text21 = parseFloat($('#ExtraNoOfEmploymentChecks').val());
+        var text31 = parseFloat($('#ExtraNoOfHealthLicenseChecks').val());
+        var text41 = parseFloat($('#ExtraNoOfCGSChecks').val());
+        var text51 = parseFloat($('#ExtraNoOfEducation').val());
+
+        var total = text21 + text31 + text41 + text51;
+        if ($("#PackageType").val() != "") {
+            $.ajax({
+                url: BaseURL + 'Admin/RenewalCases/GetCalPackageAmount',
+                type: 'POST',
+                async: false,
+                cache: false,
+                data: {
+                    PackeageId: $("#PackageType").val(),
+                    TotalExtra: total
+                },
+                success: function (data) {
+                    $("#Amount").val(data);
+                }
+            });
+        }
+        else {
+            jAlert('Please select package', 'Alert Message');
+        }
+    });
+
+    $(".chgAmount").keyup(function () {
+        if ($('#TotalNoOfEmploymentChecks').val() == '') { $('#TotalNoOfEmploymentChecks').val('0'); }
+        if ($('#ExtraNoOfEmploymentChecks').val() == '') { $('#ExtraNoOfEmploymentChecks').val('0'); }
+        if ($('#ExtraNoOfHealthLicenseChecks').val() == '') { $('#ExtraNoOfHealthLicenseChecks').val('0'); }
+        if ($('#ExtraNoOfCGSChecks').val() == '') { $('#ExtraNoOfCGSChecks').val('0'); }
+        if ($('#ExtraNoOfEducation').val() == '') { $('#ExtraNoOfEducation').val('0'); }
+
+        var text21 = parseFloat($('#ExtraNoOfEmploymentChecks').val());
+        var text31 = parseFloat($('#ExtraNoOfHealthLicenseChecks').val());
+        var text41 = parseFloat($('#ExtraNoOfCGSChecks').val());
+        var text51 = parseFloat($('#ExtraNoOfEducation').val());
+
+        var total = text21 + text31 + text41 + text51;
+        if ($("#PackageType").val() != "") {
+            $.ajax({
+                url: BaseURL + 'Admin/RenewalCases/GetCalPackageAmount',
+                type: 'POST',
+                async: false,
+                cache: false,
+                data: {
+                    PackeageId: $("#PackageType").val(),
+                    TotalExtra: total
+                },
+                success: function (data) {
+                    $("#Amount").val(data);
+                }
+            });
+        }
+        else {
+            jAlert('Please select package', 'Alert Message');
+        }
+    });
+}
+
+var $HAADUNU = "HAAD";
+var $PackageA = 0;
+var $ExtraChk = 0;
+var $IsTrans = false;
+function CalculationWithPackage(BaseURL) {
+    $(".chgAmountPk").change(function () {
+        ExtraChecks();
+        PackageAmount(0, PackageType = $("#PackageType").val());
+        PackageValue($("#PackageType").val());
+        if ($IsTrans == false) {
+            TotalAmount($ExtraChk, 0, $PackageA);
+        }
+        else
+            TotalAmount($ExtraChk, $HAADUNU, 0);
+    });
+
+    $(".chgAmount").keyup(function () {
+        var ValidF = ValidationErrorField();
+        if (ValidF == null) {
+            ExtraChecks();
+            if ($IsTrans == false) {
+                TotalAmount($ExtraChk, 0, $PackageA);
+            }
+            else {
+                TotalAmount($ExtraChk, $HAADUNU, 0);
+            }
+        }
+        else {
+            ResetExtraCheck();
+        }
+    });
+
+    $("#IsTrasfered").change(function () {
+        $IsTrans = false;
+        $(".DivIsTrans").find("input, select").prop("disabled", false);
+        $('#DivHAADUAENONUAE').css('display', 'none');
+        $('input[name=HAADUAENONUAE]').attr('checked', false);
+        TotalAmount($ExtraChk, 0, $PackageA);
+
+        if ($(this).is(':checked')) {
+            var theId = $(this).attr('id');
+            var theValue = $(this).val();
+            $('#DivHAADUAENONUAE').css('display', 'block');
+            $(".DivIsTrans").find("input, select").prop("disabled", true);
+            $(".DivIsTrans").find("input, select").addClass('fadeOut');
+            HAADUAENONUAEAmount();
+            $('.DivIsTrans').each(function () {
+                $('.DivIsTrans :input').val('0');
+            });
+            TotalAmount($ExtraChk, $HAADUNU, 0);
+            $IsTrans = true;
+        }
+        else {
+            $(".DivIsTrans").find("input, select").removeClass('fadeOut');
+            //$("#IsTrasfered, .HAADUAENONUAE input").attr("checked", false);
+        }
+    });
+
+    if ($("#IsTrasfered").is(":checked") == true) {
+        $('#DivHAADUAENONUAE').css('display', 'block');
+        $(".DivIsTrans").find("input, select").prop("disabled", true);
+        $(".DivIsTrans").find("input, select").addClass('fadeOut');
+    }
+    else {
+        $('#DivHAADUAENONUAE').css('display', 'none');
+        $(".DivIsTrans").find("input, select").prop("disabled", false);
+        $(".DivIsTrans").find("input, select").removeClass('fadeOut');
+    }
+
+    $(".HAADUAENONUAE").change(function () {
+        $IsTrans = true;
+        HAADUAENONUAEAmount();
+        TotalAmount($ExtraChk, $HAADUNU, 0);
+    });
+
+    $("#validationHAADUAENONUAE").hide();
+    $("#valiHAADUAENONUAE").hide();
+    $('#btnDateSearch').click(function () {
+        if (ValidationErrorField() == null) {
+            $("input[name='btnDateSearch']").prop("type", "submit");
+            return true;
+        } else {
+            $("input[name='btnDateSearch']").prop("type", "button");
+            return false;
+        }
+    });
+
+    $('#DivHAADUAENONUAE input').change(function () {
+        if ($('#DivHAADUAENONUAE input:checked').val()) {
+            $("#valiHAADUAENONUAE").html("").hide();
+        }
+    });
+
+    $('#DivFacility').css('display', 'none');
+    $('#PaymentCategory').change(function () {
+        $('#DivFacility').css('display', 'none');
+        if ($('#PaymentCategory').val() == 2) {
+            $('#DivFacility').css('display', 'block');
+        }
+    });
+}
+
+function PackageAmount(ExtraChecks, PackageType) {
+    if (PackageType >= 0) {
+        $.ajax({
+            url: BaseURL + 'Admin/RenewalCases/GetCalPackageAmount',
+            type: 'POST',
+            async: false,
+            cache: false,
+            data: {
+                PackeageId: PackageType,
+                TotalExtra: ExtraChecks
+            },
+            success: function (data) {
+                $PackageA = data;
+            }
+        });
+    }
+}
+
+function ExtraChecks() {
+    if ($('#ExtraNoOfEmploymentChecks').val() == '') { $('#ExtraNoOfEmploymentChecks').val('0'); }
+    if ($('#ExtraNoOfHealthLicenseChecks').val() == '') { $('#ExtraNoOfHealthLicenseChecks').val('0'); }
+    if ($('#ExtraNoOfCGSChecks').val() == '') { $('#ExtraNoOfCGSChecks').val('0'); }
+    if ($('#ExtraNoOfEducation').val() == '') { $('#ExtraNoOfEducation').val('0'); }
+
+    var text21 = parseFloat($('#ExtraNoOfEmploymentChecks').val());
+    var text31 = parseFloat($('#ExtraNoOfHealthLicenseChecks').val());
+    var text41 = parseFloat($('#ExtraNoOfCGSChecks').val());
+    var text51 = parseFloat($('#ExtraNoOfEducation').val());
+    var total = text21 + text31 + text41 + text51;
+    $ExtraChk = total;
+    return total;
+}
+
+function HAADUAENONUAEAmount() {
+    var a = "";
+    var aRel = "";
+    $HAADUNU = 0;
+    var maxVal = 0;
+    $('.loginAsa > .col1 input:checked').each(function () {
+        a = $(this).attr('name');
+        aRel = $(this).attr('rel');
+        if (aRel > maxVal) {
+            maxVal = aRel;
+            $HAADUNU = parseInt(maxVal);
+        }
+    });
+    
+    //if (a == "UAE") {
+    //    $HAADUNU = 100;
+    //}
+    //if (a == "NONUAE") {
+    //    $HAADUNU = 200;
+    //}
+    //if (a == "HAAD") {
+    //    $HAADUNU = 0;
+    //}
+    //if (a == "DATAFLOWPLUSRT") {
+    //    $HAADUNU = 0;
+    //}
+    //alert($HAADUNU);
+    return $HAADUNU;
+}
+
+function PackageValue(PackageType) {
+    $.ajax({
+        url: BaseURL + 'Admin/RenewalCases/GetNoOfCheckCountPackage',
+        type: 'POST',
+        async: false,
+        cache: false,
+        data: {
+            PackeageId: PackageType,
+        },
+        success: function (data) {
+            var markup = "";
+            for (var x = 0; x <= data ; x++) {
+                markup += "<option>" + x + "</option>";
+            }
+            $("#TotalNoOfEducation").html(markup).show();
+        }
+    });
+}
+
+function TotalAmount(ExtraChecks, HAADUAENONUAE, Package) {
+    if ($('#Amount').val() == '') { $('#Amount').val('0'); }
+    var VATPercentage = $('#VATPercentage').val();
+    var AmountCalulation = parseInt(ExtraChecks * 300 + HAADUAENONUAE + Package);
+    var VATAmount = parseInt(AmountCalulation * VATPercentage / 100);
+    var grossAmount = parseInt(AmountCalulation + VATAmount);
+    $("#Amount").val(AmountCalulation);
+    $("#GrossAmount").val(grossAmount);
+    $("#VATAmount").val(VATAmount);
+    
+}
+
+function ValidationErrorField() {
+    $("#valiHAADUAENONUAE").html("").hide();
+    $("#validation").html("").hide();
+    if ($IsTrans == true && $('#DivHAADUAENONUAE input:checked').val() == null) {
+        $("#valiHAADUAENONUAE").html("Please select transferred case").show();
+        return false;
+    }
+    if ($("#InvoicingFacility").val() == "") {
+        $("#validation").html("Please select facility").show();
+        return false;
+    }
+    if ($("#PackageType").val() == "") {
+        jAlert('Please select package', 'Alert Message');
+        return false;
+    }
+}
+
+function ResetExtraCheck() {
+    $(".chgAmount").find("input, select, inputText").val('0');
+}
+
+function ResetFields() {
+    $('#ResetFields').click(function () {
+        $('.contentGrid input').not('.bottomLinkSection input, #Onlinecases, #Offlinecases').attr('value', '');
+        $('.showdata .inputBox').empty();
+        $('#DivHAADUAENONUAE').hide();
+        $(".DivIsTrans").find("input, select, inputText").prop("disabled", false);
+        if ($(".DivIsTrans").find("input, select, inputText").hasClass('fadeOut')) {
+            $(".DivIsTrans").find("input, select, inputText").removeClass('fadeOut');
+        }
+        $(".DivIsTrans").prop("disabled", false);
+        $("#IsTrasfered").prop("disabled", false);
+        $('.chgAmount input').attr('value', 0);
+        $('.field-validation-error').remove();
+    });
+}
+
+
+function DeleteComponent(event) {
+    if ($("#delVal").val() == "0") {
+        jConfirm('Are you sure want to delete?', 'Confirmation Message',
+        function (r) {
+            if (r == true) {
+                window.parent.document.getElementById("delVal").Value = "1";
+                //$(event.target).attr("class", "");
+                $(event.target).removeClass('delComponenet');
+                $(event.target).attr("href", $(event.target).attr('rel'));
+                event.target.click();
+            }
+        });
+    }
+}
+
+
+function OpenDatePickerLog() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var dates = $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        buttonImage: BaseURL + '/Images/calendar.png',
+        showOn: 'both',
+        yearRange: '-100:+0',
+        //minDate: '0',
+        maxDate: '+40Y',
+        buttonImageOnly: true,
+        onSelect: function (selectedDate) {
+            var option = this.id;
+            var DateFrom;
+            var DateTo;
+            if (option == 'DateTo') {
+                DateTo = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                DateFrom = $.datepicker.parseDate('dd/mm/yy', $('#' + ('DateFrom')).val());
+                CompareLogDateTo(DateTo, DateFrom, this.id)
+            }
+            if (option == 'DateFrom') {
+                DateFrom = $.datepicker.parseDate('dd/mm/yy', $('#' + this.id).val());
+                DateTo = $.datepicker.parseDate('dd/mm/yy', $('#' + ('DateTo')).val());
+                CompareLogDateTo(DateTo, DateFrom, this.id)
+            }
+            $('.datepicker').valid();
+        }
+    })
+    $(".datepicker").keypress(function (event) {
+        return false;
+    });
+}
+function CompareLogDateTo(DateTo, DateFrom, id) {
+    if (typeof (DateTo) === "undefined") {
+        DateTo = null;
+    }
+    if (typeof (DateFrom) === "undefined") {
+        DateFrom = null;
+    }
+    if (DateFrom == null) {
+        jAlert('Please select  Date From date first.', 'Alert Message');
+        $('#' + id).val('');
+        return false;
+    }
+    else if (DateTo != null && DateFrom != null) {
+        DateFrom.setDate(DateFrom.getDate() - 1);
+        if (new Date(DateTo) < new Date(DateFrom)) {
+            jAlert('To Date should be greater than From Date.', 'Alert Message');
+            $('#' + id).val('');
+            return false;
+        }
+    }
+}
+
+var AsyncType = { "True": "true", "False": "false" };
+var RequestType = { "GET": "GET", "POST": "POST" };
+function InitAreYouSure(context) {
+    $(context).areYouSure();
+}
+function ReInitAreYouSure(context) {
+    $(context).trigger('reinitialize.areYouSure');
+}
+function ReScanAreYouSure(context) {
+    $(context).trigger('rescan.areYouSure');
+}
+function ManualCheckAreYouSure(context) {
+    $(context).trigger('checkform.areYouSure');
+}
+//function OpenWindow(url) {
+//    RedirectURL(url);
+//}
+function RedirectURL(url) {
+
+    var a = document.createElement("a");
+    if (a.click) {
+        // HTML5 browsers and IE support click() on , early FF does not.
+        a.setAttribute("href", url);
+        a.style.display = "none";
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+    } else {
+        // Early FF can, however, use this usual method
+        // where IE cannot with secure links.
+        window.open(url, '_blank');
+        //window.location.href = url;
+    }
+}
+function OnLoad() {
+   
+    UpdateTabCount();
+    window.onunload = function () {
+        
+        UpdateUnLoadTabCount();
+    };
+}
+function UpdateTabCount() {
+    JsonRequest({ sessionId: window.name }, AsyncType.True, RequestType.POST, 'Account/SetTabCount', function (data) {
+        if (!data.isSame)
+        {
+            window.name = "";
+            window.parent.document.location.href = window.rootUrl + 'Account/Login';
+        }
+        else
+        {
+            window.sessionId = data.SessionId;
+            window.name = data.SessionId;
+        }
+            
+    }, function (data) { });
+}
+function UpdateUnLoadTabCount() {
+    JsonRequest({ sessionId: window.sessionId }, AsyncType.True, RequestType.POST, 'Account/SetUnLoadTabCount', function (data) {
+       
+    }, function (data) { });
+}
+var JsonRequest = function (data, async, type, url, cbSuccess, cbFail) {
+    //if (!window.showLoader)
+    //    ShowLoader(true);
+    
+    url = window.rootUrl + url;
+    //url = url.replace('//', '/');
+    $.ajax({
+        data: JSON.stringify(data)
+    , cache: false
+    , type: type
+    , async: async
+    , contentType: 'application/json;charset=utf-8'
+    , url: url
+    , success: function (data) {
+        if (data.login && data.login.length > 0 && data.login.toString().trim() != '') {
+            if ($('form').length > 0) {
+                //if ($('form').areYouSure != undefined)
+                //    ReInitAreYouSure($('form'));
+                $('form').submit();
+            }
+            //ShowLoader(false);
+            window.parent.document.location.href = window.rootUrl + 'Account/SessionTimeout';
+        }
+        else if (data.locked && data.locked === true) {
+            if ($('form').length > 0) {
+                $('form').submit();
+                //if ($('form').areYouSure != undefined)
+                //    ReInitAreYouSure($('form'));
+            }
+
+            //ShowAlert(data.lockedMessage, '', MessageIcons.Error, [(function () {
+            //    window.parent.document.location.href = window.rootUrl + 'Account/LogOff';
+            //})]);
+            //ShowLoader(false);
+        }
+        else if (data.error && data.error.toString().trim() != '') {
+
+            if ($('form').length > 0) {
+                $('form').submit();
+                //if ($('form').areYouSure != undefined)
+                //    ReInitAreYouSure($('form'));
+            }
+            //ShowAlert(data.error, '', MessageIcons.Error, [(function () {
+
+            //    window.parent.document.location.href = window.rootUrl + 'Account/Error';
+            //})]);
+            //ShowLoader(false);
+        }
+        else {
+            cbSuccess(data);
+            //if (!window.showLoader)
+            //    ShowLoader(false);
+        }
+
+    }
+    , fail: function (data) {
+        cbFail(data);
+        //ShowLoader(false);
+    }
+    });
+
+};
+
+$('.nw-tooltip').hover(function () {
+    var $select = $(this).find('select');
+    var $first = $select.find('option').first().val();
+    var $val = $select.val();
+    if ($first != $val) {
+        $(this).find('.nw-tooltiptext').css("display", "none");
+    }
+    else {
+        $(this).find('.nw-tooltiptext').css("display", "");
+    }
+
+});
